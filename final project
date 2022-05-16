@@ -1,0 +1,185 @@
+package caleb.is287tictactoe;
+
+import javafx.application.Application;
+import javafx.scene.text.Font;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.paint.Color;
+
+// Write (type) the Game algorithm
+// Make sue conditions for winning are crystal clear, written down, agreed
+// Clearly state any potential conitions for a draw
+// Be intentional about the type of application this will be, and rules associated
+//Decide what you want the user to see and do: functional spec
+// Remember the entry point to every java application
+// Draw the game board
+// Identify the objects
+// Remember your toos:
+// algorithm, flowchart, legowit, curpits
+// intellij, implications, differences from eclispe
+// intellij javafx
+// variable data types, purposes, limits, values
+// int, char, boolean, String, double, float, etc
+// single and multidimensional arrays
+// selections: if/else statements, switch, ternary
+// truth tables and logical tests
+// whoseTurn = (whoseTurn =='X') ? '0' : 'X';
+// methods
+// loops: loop conditions, increment, decrement
+// classes, constructors, class methods, class properties
+// imports/packages/libraries and reuse of capability
+// breakpoints
+// add code to: allow skeleton
+// Add code to: allow Imports
+//Completes the User Interface: A sub-step
+// Add code to: Draw one X in specific position and one O, and quick test
+// Add code to: Hande Mouse Click Events
+// Add code to: determine when to display x and when display o token
+// Visual feedback and quick tests
+// Add code to: Determine if a player wins
+// Add code to: Display winning message
+// Clean up code, remove anything unnecessary
+// Play it with a friend or family member, enjoy this change it
+public class TicTacToe extends Application { // every javafx application is subclass of Application
+    private Cell[][] cell = new Cell[3][3];
+    private Label lblStatus = new Label("X's turn to play next");
+    private char whoseTurn = 'X';
+
+    public void start(Stage primaryStage) { // the start for every javafx application
+        GridPane pane = new GridPane();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                pane.add(cell[i][j] = new Cell(), j, i);
+            }
+        }
+        //cell[0][0].setToken('X'); //quick test
+        // cell[0][0].setToken('O'); // quick test
+        BorderPane borderPane = new BorderPane();
+        borderPane.setCenter(pane);
+        borderPane.setBottom(lblStatus);
+        Scene scene = new Scene(borderPane, 450, 170);
+        primaryStage.setTitle("TicTacToe: State of Missouri rivalry version!!!");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    public boolean isFull() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++){
+                if (cell[i][j].getToken() == ' ') {
+                    return false;
+                }
+            }
+        }
+        // means all cells have a token
+        return true;
+    }
+
+    public boolean isWon(char token) {
+        // if there are 3 of same token in same row, return true
+        for (int i = 0; i < 3; i++) {
+            if (cell[i][0].getToken() == token
+                    && cell[i][1].getToken() == token
+                    && cell[i][2].getToken() == token) {
+                return true;
+            }
+        }
+        // if there are 3 of same token in same column, return true
+        for (int j = 0; j < 3; j++) {
+            if (cell[j][0].getToken() == token
+                    && cell[j][1].getToken() == token
+                    && cell[j][2].getToken() == token) {
+                return true;
+            }
+        }
+        // if there are 3 tokens diagonally, top left to bottom right, return true
+        if (cell[0][0].getToken() == token
+                && cell[1][1].getToken() == token
+                && cell[2][2].getToken() == token) {
+            return true;
+        }
+        // if there are 3 tokens diogonally, bottom left to top right, return true
+        if (cell[0][2].getToken() == token
+                && cell[1][1].getToken() == token
+                && cell[2][0].getToken() == token) {
+            return true;
+        }
+        // if none of these conditions are met
+        return false;
+    }
+
+    public class Cell extends Pane {
+        private char token = ' ';
+        public Cell() {
+            setStyle("-fx-border-color:blue");
+            this.setPrefSize(800, 800);
+            this.setOnMouseClicked(e->handleMouseClick());
+        }
+
+        public char getToken() {
+            return token;
+        }
+
+        public void setToken(char c) {
+            token = c;
+            if (token == 'X') {
+                Line line1 = new Line(10, 10, this.getWidth()-10,
+                        this.getHeight()-10);
+                line1.endXProperty().bind(this.widthProperty().subtract(10));
+                line1.endYProperty().bind(this.heightProperty().subtract(10));
+                line1.setStroke(Color.BLACK);
+                Line line2 = new Line(10,this.getHeight()-10,
+                        this.getWidth()-10,10);
+                line2.startYProperty().bind(this.heightProperty().subtract(10));
+                line2.endXProperty().bind(this.widthProperty().subtract(10));
+                line2.setStroke(color.YELLOW);
+                this.getChildren().addAll(line1,line2);
+                // team w/ green/white is next
+                lblStatus.setTextFill(Color.GREEN);
+            } else if (token == '0') {
+                // resizes automatically
+                Ellipse ellipse = new Ellipse(this.getWidth()/2,
+                        this.getHeight() / 2, this.getWidth() / 2 -8,
+                        this.getHeight() / 2 - 8);
+                ellipse.centerXProperty().bind(this.widthProperty().divide(2));
+                ellipse.centerYProperty().bind(this.heightProperty().divide(2));
+                ellipse.radiusXProperty().bind(this.widthProperty().divide(2).subtract(10));
+                ellipse.radiusYProperty().bind(this.heightProperty().divide(2).subtract(10));
+                ellipse.setStroke(color.GREEN);
+                ellipse.setFill(color.WHITE);
+                this.getChildren().add(ellipse);
+                //team w/ yellow/blue is next
+                lblStatus.setTextFill(color.BLUE);
+            }
+        }
+
+        private void handleMouseClick() {
+            if (token == ' ' && whoseTurn != ' ') {
+                setToken(whoseTurn);
+                if (isWon(whoseTurn)) {
+                    lblStatus.setText(whoseTurn + "won! Good game. Game over");
+                    lblStatus.setTextFill(Color.BLACK);
+                    lblStatus.setFont(Font.font(25));
+                    whoseTurn = ' ';
+                } else if (isFull()) {
+                    lblStatus.setText("Draw! Game over. Run it back?");
+                    lblStatus.setTextFill(Color.RED);
+                    lblStatus.setFont(Font.font(15));
+                    whoseTurn = ' ';
+                } else {
+                    whoseTurn = (whoseTurn == 'X') ? 'O' : 'X';
+                    lblStatus.setText(whose + "'s turn'");
+                }
+            }
+        }
+    }
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
